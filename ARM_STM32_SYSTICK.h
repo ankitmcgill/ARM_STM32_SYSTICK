@@ -20,6 +20,7 @@
 	#include "misc.h"
 	#define DEVICE_UNIQUE_ID_ADDRESS 0x1FFFF7E8
 #endif
+
 #ifdef STM32F072 
 	//SETTINGS SPECIFIC FOR STM32F072 SERIES
 	#include "stm32f0xx_misc.h"
@@ -27,8 +28,8 @@
 #endif
 
 
-#define STM_STM32_SYSTICK_SOURCE_HCLK 			SysTick_CLKSource_HCLK
-#define STM_STM32_SYSTICK_SOURCE_HCLK_DIV8 	SysTick_CLKSource_HCLK_Div8
+#define ARM_STM32_SYSTICK_SOURCE_HCLK 			SysTick_CLKSource_HCLK
+#define ARM_STM32_SYSTICK_SOURCE_HCLK_DIV8 	SysTick_CLKSource_HCLK_Div8
 
 static uint32_t ARM_STM32_SYSTICK_SOURCE;
 
