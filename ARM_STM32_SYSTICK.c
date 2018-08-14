@@ -9,29 +9,26 @@
 
 #include "ARM_STM32_SYSTICK.h"
 
-uint32_t ARM_STM32_SYSTICK_SOURCE;
-
-void ARM_STM32_SYSTICK_Read_Device_Id(uint32_t* ptr)
-{
-	//READ AND RETURN 96 BITS (12 BYTES)
-	//UNIQUE DEVICE ID
-	
-	uint32_t* ptr_val = ((uint32_t*)DEVICE_UNIQUE_ID_ADDRESS);
-	
-	ptr[0] = ptr_val[0];
-	ptr[1] = ptr_val[1];
-	ptr[2] = ptr_val[2];
-}
+static bool s_initialized = false;
+static uint32_t s_systick_clk_source;
 
 void ARM_STM32_SYSTICK_Init(uint32_t systick_clock_source)
 {
 	//SET THE SOURCE OF SYSTICK (HCLK OR HCLK/8)
+
+	if(s_initialized)
+	{
+		//ALREADY INITIALIZED
+		return;
+	}
+
 	SysTick_CLKSourceConfig(systick_clock_source);
-	
-	ARM_STM32_SYSTICK_SOURCE = systick_clock_source;
+	s_systick_clk_source = systick_clock_source;
+
+	s_initialized = true;
 }
 
-void ARM_STM32_SYSTICK_Delay_Us(uint32_t val)
+void ARM_STM32_SYSTICK_Delay_Blocking_Us(uint32_t val)
 {
 	//BLOCKING DELAY OF SPECIFIED MICRO-SECONDS
 	
@@ -40,7 +37,7 @@ void ARM_STM32_SYSTICK_Delay_Us(uint32_t val)
 	
 	//FIND THE SYSTICK COUNT REQUIRED FOR 1US PERIOD
 	uint32_t one_us_count;
-	if(ARM_STM32_SYSTICK_SOURCE == SysTick_CLKSource_HCLK)
+	if(s_systick_clk_source == SysTick_CLKSource_HCLK)
 	{
 		one_us_count = (clock.HCLK_Frequency/1000000);
 	}
@@ -64,10 +61,10 @@ void ARM_STM32_SYSTICK_Delay_Us(uint32_t val)
 	SysTick->CTRL &= ~(SysTick_CTRL_ENABLE_Msk);
 }
 
-void ARM_STM32_SYSTICK_Delay_Ms(uint32_t val)
+void ARM_STM32_SYSTICK_Delay_Blocking_Ms(uint32_t val)
 {
 	//BLOCKING DELAY OF SPECIFIED MILLI-SECONDS
 	
-	ARM_STM32_SYSTICK_Delay_Us(val * 1000);
+	ARM_STM32_SYSTICK_Delay_Blocking_Us(val * 1000);
 }
 
